@@ -1,24 +1,59 @@
-import express from "express";
-import path from "path";
-import AuthController from "./src/controllers/AuthController";
-const PORT = process.env.PORT || 3001;
+const express = require("express");
+const AWS = require("aws-sdk");
+const fs = require("fs");
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
 
 const app = express();
-app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
-// Have Node serve the files for our built React app
-app.use(express.static(path.resolve(__dirname, "../client/build")));
+const PORT = process.env.PORT || 3001;
+
+const bucketName = process.env.AWS_BUCKET_NAME;
+const region = process.env.AWS_BUCKET_REGION;
+const accessKeyId = process.env.AWS_ACCESS_KEY;
+const secretAccessKey = process.env.AWS_SECRET_KEY;
+
+const s3 = new AWS.S3({
+  accessKeyId: accessKeyId,
+  secretAccessKey: secretAccessKey,
+  region: region,
+});
+
+app.post("/uploadfile", upload.single("file"), (req, res) => {
+  // console.log(req);
+  console.log(req.file);
+  if (req.file == null) {
+    return res.status(400).json({ message: "Please choose the file" });
+  }
+  var file = req.file;
+  // res.send(200);
+  // res.sendStatus(201);
+
+  const uploadImage = (file) => {
+    const fileStream = fs.createReadStream(file.path);
+
+    const params = {
+      Bucket: bucketName,
+      Key: file.originalname,
+      Body: fileStream,
+    };
+
+    s3.upload(params, function (err, data) {
+      console.log(data);
+      if (err) {
+        throw err;
+      }
+      console.log(`File uploaded successfully. ${data.Location}`);
+    });
+  };
+  uploadImage(file);
+  return res.send(201);
+});
 
 app.get("/api", (req, res) => {
   res.json({ message: "Hello from server!" });
-});
-
-app.get("/getuser", AuthController.getUser);
-
-// All other GET requests not handled before will return our React app
-app.get("*", (req, res) => {
-  res.sendFile(path.resolve(__dirname, "../client/build", "index.html"));
 });
 
 app.listen(PORT, () => {
