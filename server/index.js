@@ -23,7 +23,7 @@ const s3 = new AWS.S3({
 
 app.post("/uploadfile", upload.single("file"), (req, res) => {
   // console.log(req);
-  console.log(req.file);
+  //console.log(req.file);
   if (req.file == null) {
     return res.status(400).json({ message: "Please choose the file" });
   }
@@ -33,7 +33,7 @@ app.post("/uploadfile", upload.single("file"), (req, res) => {
 
   const uploadImage = (file) => {
     const fileStream = fs.createReadStream(file.path);
-
+    //console.log(fileStream);
     const params = {
       Bucket: bucketName,
       Key: file.originalname,
@@ -41,7 +41,7 @@ app.post("/uploadfile", upload.single("file"), (req, res) => {
     };
 
     s3.upload(params, function (err, data) {
-      console.log(data);
+      //console.log(data);
       if (err) {
         throw err;
       }
@@ -50,6 +50,18 @@ app.post("/uploadfile", upload.single("file"), (req, res) => {
   };
   uploadImage(file);
   return res.send(201);
+});
+
+app.get("/getfile/:filename", (req, res) => {
+  let fileName = req.params.filename;
+  //console.log(fileName);
+  const url = s3.getSignedUrl("getObject", {
+    Bucket: bucketName,
+    Key: fileName,
+    Expires: 60 * 5,
+  });
+  //console.log(url);
+  res.json({ url: url });
 });
 
 app.get("/api", (req, res) => {

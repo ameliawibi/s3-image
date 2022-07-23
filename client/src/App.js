@@ -1,5 +1,6 @@
 import React from "react";
 import Uploadimage from "./Uploadimage";
+import GetFile from "./GetFile";
 import "./App.css";
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
       <header className="App-header">
         <p>{!data ? "Loading..." : data}</p>
         <Uploadimage />
+        <GetFile />
       </header>
     </div>
   );
