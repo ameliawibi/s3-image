@@ -49,7 +49,7 @@ app.post("/uploadfile", upload.single("file"), (req, res) => {
     });
   };
   uploadImage(file);
-  return res.send(201);
+  return res.sendStatus(201);
 });
 
 app.get("/getfile/:filename", (req, res) => {
@@ -62,6 +62,21 @@ app.get("/getfile/:filename", (req, res) => {
   });
   //console.log(url);
   res.json({ url: url });
+});
+
+app.get("/deletefile/:filename", (req, res) => {
+  let fileName = req.params.filename;
+
+  const params = {
+    Bucket: bucketName,
+    Key: fileName,
+  };
+
+  s3.deleteObject(params, (err, data) => {
+    if (err) {
+      console.log(err, err.stack);
+    } else console.log(data);
+  });
 });
 
 app.get("/api", (req, res) => {
