@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import Uploadimage from "./Uploadimage";
-import GetFile from "./GetFile";
 import GetFiles from "./GetFiles";
 import "./App.css";
 
@@ -18,7 +17,6 @@ function App() {
       <header className="App-header">
         <p>{!data ? "Loading..." : data}</p>
         <Uploadimage />
-        <GetFile />
         <GetFiles />
       </header>
     </div>
