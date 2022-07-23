@@ -21,6 +21,23 @@ const s3 = new AWS.S3({
   region: region,
 });
 
+app.get("/getfiles", (_req, res) => {
+  s3.listObjects(
+    {
+      Bucket: bucketName,
+    },
+    function (err, data) {
+      if (err) {
+        console.log(err, err.stack);
+      } else {
+        //console.log(data.Contents);
+        return res.json({ files: data.Contents });
+      }
+    }
+  );
+  //res.json({ files: files });
+});
+
 app.post("/uploadfile", upload.single("file"), (req, res) => {
   // console.log(req);
   //console.log(req.file);
@@ -76,6 +93,7 @@ app.get("/deletefile/:filename", (req, res) => {
     if (err) {
       console.log(err, err.stack);
     } else console.log(data);
+    return res.sendStatus(201);
   });
 });
 
