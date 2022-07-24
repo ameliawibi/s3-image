@@ -1,5 +1,6 @@
 import React, { useReducer, useContext, useEffect, createContext } from "react";
 import axios from "axios";
+import UploadImage from "./UploadImage";
 
 // Step 1: Initial State and Actions
 const initialState = {
@@ -9,6 +10,7 @@ const initialState = {
 const actions = {
   INITIALIZE: "INITIALIZE",
   TEST_ADD: "TEST_ADD",
+  UPLOAD: "UPLOAD",
 };
 
 function reducer(state, action) {
@@ -23,13 +25,19 @@ function reducer(state, action) {
         ...state,
         imageList: [...state.imageList, action.payload],
       };
+    case actions.UPLOAD:
+      return {
+        ...state,
+        imageList: [...state.imageList, action.payload],
+      };
     default:
       return state;
   }
 }
 
 // Step 3: Create the Context and Provider to Dispatch the Actions.
-const ImageListContext = createContext();
+export const ImageListContext = createContext();
+export const DispatchContext = createContext();
 
 const Provider = ({ children }) => {
   //Here we pass the reducer function and theinitialState to the useReducer hook. This will return state and dispatch. The state will have the initialState. And the dispatch is used to trigger our actions, just like in redux.
@@ -47,6 +55,7 @@ const Provider = ({ children }) => {
   if (!state) return null;
 
   const store = {
+    actions: actions,
     imageList: state.imageList,
     testAddImageList: (fileName) => {
       dispatch({
@@ -58,22 +67,27 @@ const Provider = ({ children }) => {
 
   //We pass the value object as a prop to the TodoListContext's Provider, so that we can access it using useContext.
   return (
-    <ImageListContext.Provider value={store}>
-      {children}
-    </ImageListContext.Provider>
+    <DispatchContext.Provider value={dispatch}>
+      <ImageListContext.Provider value={store}>
+        {children}
+      </ImageListContext.Provider>
+    </DispatchContext.Provider>
   );
 };
 
 //Step 4: Create components that will use the store.
 function ViewImageList() {
   const { imageList } = useContext(ImageListContext);
-  console.log(imageList);
+  //console.log(imageList);
 
   return (
     <div>
       <ul>
         {imageList.map((image, index) => (
-          <li key={index}>{image.Key}</li>
+          <li key={index}>
+            <p>{image.Key}</p>
+            {image.SignedUrl && <img src={image.SignedUrl} />}
+          </li>
         ))}
       </ul>
     </div>
@@ -98,9 +112,10 @@ function TestAddToList() {
 }
 
 //Step 5: Final step, wrapping the above two components to the Provider.
-export default function App() {
+export function App() {
   return (
     <Provider>
+      <UploadImage />
       <ViewImageList />
       <TestAddToList />
     </Provider>

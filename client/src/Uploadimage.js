@@ -1,23 +1,18 @@
-import React, { Component } from "react";
+import React, { useState, useContext } from "react";
+import { DispatchContext, ImageListContext } from "./App";
 import axios from "axios";
 
-class Uploadimage extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      // Initially, no file is selected
-      selectedFile: null,
-      sucessmessage: " ",
-      errormessage: " ",
-    };
-  }
+function UploadImage() {
+  const [theMessage, setMessages] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
+  const dispatch = useContext(DispatchContext);
+  const { actions } = useContext(ImageListContext);
 
-  onChange = (e) => {
+  const onChange = (e) => {
     // Update the state
-    this.setState({ selectedFile: e.target.files[0] });
+    setSelectedFile(e.target.files[0]);
   };
-
-  uploadFile = (e) => {
+  const uploadFile = (e) => {
     e.preventDefault();
 
     // Create an object of formData
@@ -25,40 +20,41 @@ class Uploadimage extends Component {
 
     // Update the formData object
 
-    formData.append("file", this.state.selectedFile);
-
-    console.log(this.state.selectedFile);
+    formData.append("file", selectedFile);
 
     axios
       .post("/uploadfile", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       })
       .then((res) => {
-        console.log(res);
-        if (res.status === 200)
-          return this.setState({
-            sucessmessage: "File uploaded successfullyS3",
+        //console.log(res);
+        if (res) {
+          setMessages("File uploaded successfully");
+          dispatch({
+            type: actions.UPLOAD,
+            payload: res.data.files,
           });
+        }
       })
       .catch((error) => {
         console.error(error.response);
-        this.setState({
-          errormessage: error.response.status + " Please select the file",
-        });
+        setMessages("Please select a file");
       });
   };
 
-  render() {
-    return (
-      <div>
-        <form method="post" action="#" onSubmit={this.uploadFile}>
-          <input type="file" name="uploadfile" onChange={this.onChange}></input>
-          <p> {this.state.sucessmessage}</p>
-          <p>{this.state.errormessage}</p>
-          <button> upload</button>
-        </form>
-      </div>
-    );
-  }
+  return (
+    <div>
+      <form method="post" action="#" onSubmit={(e) => uploadFile(e)}>
+        <input
+          type="file"
+          name="uploadfile"
+          onChange={(e) => onChange(e)}
+        ></input>
+        <p> {theMessage}</p>
+        <button>Upload</button>
+      </form>
+    </div>
+  );
 }
-export default Uploadimage;
+
+export default UploadImage;

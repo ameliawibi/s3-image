@@ -30,12 +30,20 @@ app.get("/getfiles", (_req, res) => {
       if (err) {
         console.log(err, err.stack);
       } else {
-        //console.log(data.Contents);
-        return res.json({ files: data.Contents });
+        let updatedData = data.Contents;
+        updatedData.forEach((item, index) => {
+          let urlToAdd = s3.getSignedUrl("getObject", {
+            Bucket: bucketName,
+            Key: item.Key,
+            Expires: 60 * 5,
+          });
+          updatedData[index].SignedUrl = urlToAdd;
+        });
+        //console.log(updatedData);
+        return res.json({ files: updatedData });
       }
     }
   );
-  //res.json({ files: files });
 });
 
 app.post("/uploadfile", upload.single("file"), (req, res) => {
@@ -63,10 +71,18 @@ app.post("/uploadfile", upload.single("file"), (req, res) => {
         throw err;
       }
       console.log(`File uploaded successfully. ${data.Location}`);
+      let updatedData = data;
+      let urlToAdd = s3.getSignedUrl("getObject", {
+        Bucket: bucketName,
+        Key: updatedData.Key,
+        Expires: 60 * 5,
+      });
+      updatedData.SignedUrl = urlToAdd;
+      console.log(updatedData);
+      return res.status(201).json({ files: updatedData });
     });
   };
   uploadImage(file);
-  return res.sendStatus(201);
 });
 
 app.get("/getfile/:filename", (req, res) => {
