@@ -9,8 +9,8 @@ const initialState = {
 
 const actions = {
   INITIALIZE: "INITIALIZE",
-  TEST_ADD: "TEST_ADD",
   UPLOAD: "UPLOAD",
+  DELETE: "DELETE",
 };
 
 function reducer(state, action) {
@@ -20,15 +20,17 @@ function reducer(state, action) {
         ...state,
         imageList: action.payload,
       };
-    case actions.TEST_ADD:
-      return {
-        ...state,
-        imageList: [...state.imageList, action.payload],
-      };
     case actions.UPLOAD:
       return {
         ...state,
         imageList: [...state.imageList, action.payload],
+      };
+    case actions.DELETE:
+      return {
+        ...state,
+        imageList: state.imageList.filter(
+          (_item, index) => index !== action.payload
+        ),
       };
     default:
       return state;
@@ -57,15 +59,16 @@ const Provider = ({ children }) => {
   const store = {
     actions: actions,
     imageList: state.imageList,
-    testAddImageList: (fileName) => {
+    /*testAddImageList: (fileName) => {
       dispatch({
         type: actions.TEST_ADD,
         payload: { Key: fileName },
       });
     },
+    */
   };
 
-  //We pass the value object as a prop to the TodoListContext's Provider, so that we can access it using useContext.
+  //We pass the value object as a prop to the Context's Provider, so that we can access it using useContext.
   return (
     <DispatchContext.Provider value={dispatch}>
       <ImageListContext.Provider value={store}>
@@ -78,7 +81,20 @@ const Provider = ({ children }) => {
 //Step 4: Create components that will use the store.
 function ViewImageList() {
   const { imageList } = useContext(ImageListContext);
-  //console.log(imageList);
+  const dispatch = useContext(DispatchContext);
+
+  const handleDelete = (fileName, index) => {
+    axios
+      .get(`/deletefile/${fileName}`)
+      .then((res) => {
+        console.log(res);
+        dispatch({ type: actions.DELETE, payload: index });
+        console.log(imageList);
+      })
+      .catch((error) => {
+        console.error(error.response);
+      });
+  };
 
   return (
     <div>
@@ -87,26 +103,12 @@ function ViewImageList() {
           <li key={index}>
             <p>{image.Key}</p>
             {image.SignedUrl && <img src={image.SignedUrl} />}
+            <button onClick={() => handleDelete(image.Key, index)}>
+              Delete
+            </button>
           </li>
         ))}
       </ul>
-    </div>
-  );
-}
-
-function TestAddToList() {
-  const { imageList, testAddImageList } = useContext(ImageListContext);
-  const fileName = "test";
-  return (
-    <div>
-      <button
-        onClick={() => {
-          testAddImageList(fileName);
-          console.log(imageList);
-        }}
-      >
-        Add "test"
-      </button>
     </div>
   );
 }
@@ -117,7 +119,6 @@ export function App() {
     <Provider>
       <UploadImage />
       <ViewImageList />
-      <TestAddToList />
     </Provider>
   );
 }
