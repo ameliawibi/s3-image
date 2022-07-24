@@ -8,7 +8,7 @@ const initialState = {
 
 const actions = {
   INITIALIZE: "INITIALIZE",
-  RESET: "RESET",
+  TEST_ADD: "TEST_ADD",
 };
 
 function reducer(state, action) {
@@ -18,9 +18,10 @@ function reducer(state, action) {
         ...state,
         imageList: action.payload,
       };
-    case actions.RESET:
+    case actions.TEST_ADD:
       return {
-        imageList: action.payload,
+        ...state,
+        imageList: [...state.imageList, action.payload],
       };
     default:
       return state;
@@ -47,10 +48,10 @@ const Provider = ({ children }) => {
 
   const store = {
     imageList: state.imageList,
-    resetImageList: (fileName) => {
+    testAddImageList: (fileName) => {
       dispatch({
-        type: actions.RESET,
-        payload: [fileName, fileName, fileName],
+        type: actions.TEST_ADD,
+        payload: { Key: fileName },
       });
     },
   };
@@ -66,6 +67,7 @@ const Provider = ({ children }) => {
 //Step 4: Create components that will use the store.
 function ViewImageList() {
   const { imageList } = useContext(ImageListContext);
+  console.log(imageList);
 
   return (
     <div>
@@ -78,18 +80,18 @@ function ViewImageList() {
   );
 }
 
-function ViewResetList() {
-  const { imageList, resetImageList } = useContext(ImageListContext);
+function TestAddToList() {
+  const { imageList, testAddImageList } = useContext(ImageListContext);
   const fileName = "test";
   return (
     <div>
       <button
         onClick={() => {
-          resetImageList(fileName);
+          testAddImageList(fileName);
           console.log(imageList);
         }}
       >
-        Reset
+        Add "test"
       </button>
     </div>
   );
@@ -100,7 +102,7 @@ export default function App() {
   return (
     <Provider>
       <ViewImageList />
-      <ViewResetList />
+      <TestAddToList />
     </Provider>
   );
 }
