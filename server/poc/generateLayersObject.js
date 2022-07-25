@@ -1,5 +1,4 @@
-const StreamZip = require("node-stream-zip");
-const zip = new StreamZip.async({ file: "./server/poc/layers.zip" });
+const { zip } = require("./zipConfig");
 const fs = require("fs");
 const path = require("path");
 const outputPath = path.join(process.cwd(), "/server/poc");
