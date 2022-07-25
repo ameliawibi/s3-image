@@ -1,0 +1,52 @@
+{
+  "layers": [
+    {
+      "top": [
+        "like-a-sir.png",
+        "cowboy.png",
+        "einstein.png",
+        "fez.png",
+        "cap.png"
+      ]
+    },
+    {
+      "background": [
+        "wheat.png",
+        "blue.png",
+        "orange.png",
+        "green.png"
+      ]
+    },
+    {
+      "head": [
+        "light.png",
+        "albino.png",
+        "zombie.png",
+        "mid.png",
+        "skeleton.png"
+      ]
+    },
+    {
+      "facial-hair": [
+        "mutton-chops.png",
+        "goatee.png",
+        "long-beard.png"
+      ]
+    },
+    {
+      "eyes": [
+        "laser.png",
+        "3d.png",
+        "square-shades.png"
+      ]
+    },
+    {
+      "shirt": [
+        "stripes-blue-white.png",
+        "pinata.png",
+        "purple-blue-pink.png",
+        "flames.png"
+      ]
+    }
+  ]
+}
