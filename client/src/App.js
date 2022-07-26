@@ -1,6 +1,6 @@
-import React, { useReducer, useContext, useEffect, createContext } from "react";
+import React, { useReducer, useEffect, createContext } from "react";
 import axios from "axios";
-import UploadImage from "./UploadImage";
+import { UploadImage, ViewImageList } from "./ViewAndUpload";
 
 // Step 1: Initial State and Actions
 const initialState = {
@@ -38,10 +38,15 @@ function reducer(state, action) {
 }
 
 // Step 3: Create the Context and Provider to Dispatch the Actions.
-export const ImageListContext = createContext();
-export const DispatchContext = createContext();
 
-const Provider = ({ children }) => {
+export const ImageContext = createContext({
+  actions: actions,
+  ...initialState,
+  uploadImage: () => Promise.resolve(),
+  deleteImage: () => Promise.resolve(),
+});
+
+export const ImageProvider = ({ children }) => {
   //Here we pass the reducer function and theinitialState to the useReducer hook. This will return state and dispatch. The state will have the initialState. And the dispatch is used to trigger our actions, just like in redux.
   const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -56,40 +61,32 @@ const Provider = ({ children }) => {
 
   if (!state) return null;
 
-  const store = {
-    actions: actions,
-    imageList: state.imageList,
-    /*testAddImageList: (fileName) => {
-      dispatch({
-        type: actions.TEST_ADD,
-        payload: { Key: fileName },
+  const uploadImage = async (formData, setMessages) => {
+    axios
+      .post("/uploadfile", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      })
+      .then((res) => {
+        if (res) {
+          setMessages("File uploaded successfully");
+          dispatch({
+            type: actions.UPLOAD,
+            payload: res.data.files,
+          });
+        }
+      })
+      .catch((error) => {
+        console.error(error.response);
+        setMessages("Please select a file");
       });
-    },
-    */
   };
 
-  //We pass the value object as a prop to the Context's Provider, so that we can access it using useContext.
-  return (
-    <DispatchContext.Provider value={dispatch}>
-      <ImageListContext.Provider value={store}>
-        {children}
-      </ImageListContext.Provider>
-    </DispatchContext.Provider>
-  );
-};
-
-//Step 4: Create components that will use the store.
-function ViewImageList() {
-  const { imageList } = useContext(ImageListContext);
-  const dispatch = useContext(DispatchContext);
-
-  const handleDelete = (fileName, index) => {
+  const deleteImage = async (fileName, index) => {
     axios
       .get(`/deletefile/${fileName}`)
       .then((res) => {
         console.log(res);
         dispatch({ type: actions.DELETE, payload: index });
-        console.log(imageList);
       })
       .catch((error) => {
         console.error(error.response);
@@ -97,28 +94,25 @@ function ViewImageList() {
   };
 
   return (
-    <div>
-      <ul>
-        {imageList.map((image, index) => (
-          <li key={index}>
-            <p>{image.Key}</p>
-            {image.SignedUrl && <img src={image.SignedUrl} />}
-            <button onClick={() => handleDelete(image.Key, index)}>
-              Delete
-            </button>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <ImageContext.Provider
+      value={{
+        actions: actions,
+        imageList: state.imageList,
+        uploadImage,
+        deleteImage,
+      }}
+    >
+      {children}
+    </ImageContext.Provider>
   );
-}
+};
 
 //Step 5: Final step, wrapping the above two components to the Provider.
 export function App() {
   return (
-    <Provider>
+    <ImageProvider>
       <UploadImage />
       <ViewImageList />
-    </Provider>
+    </ImageProvider>
   );
 }
