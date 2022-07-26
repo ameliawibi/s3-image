@@ -1,5 +1,5 @@
 const express = require("express");
-const AWS = require("aws-sdk");
+const { s3 } = require("./s3");
 const fs = require("fs");
 const multer = require("multer");
 const upload = multer({ dest: "uploads/" });
@@ -9,17 +9,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 const PORT = process.env.PORT || 3001;
-
 const bucketName = process.env.AWS_BUCKET_NAME;
-const region = process.env.AWS_BUCKET_REGION;
-const accessKeyId = process.env.AWS_ACCESS_KEY;
-const secretAccessKey = process.env.AWS_SECRET_KEY;
-
-const s3 = new AWS.S3({
-  accessKeyId: accessKeyId,
-  secretAccessKey: secretAccessKey,
-  region: region,
-});
 
 app.get("/getfiles", (_req, res) => {
   s3.listObjects(
