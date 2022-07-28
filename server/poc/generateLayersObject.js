@@ -74,7 +74,7 @@ function createObjectsFromPathArrays() {
   //console.log(tree);
   //console.log(JSON.stringify(tree, null, 2));
   fs.writeFileSync(
-    path.join(outputPath, `layers`),
+    path.join(outputPath, `layers.json`),
     JSON.stringify(tree, null, 2)
   );
 }

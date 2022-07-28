@@ -1,6 +1,9 @@
 const { s3 } = require("../s3");
 const bucketName = process.env.AWS_BUCKET_NAME;
 
+const content = require("../poc/layers.json");
+const layersObj = content.layers;
+
 async function listOfObjects() {
   return new Promise((resolve, reject) => {
     s3.listObjects(
@@ -29,7 +32,7 @@ async function listOfObjects() {
   });
 }
 
-async function amelTest() {
+async function getLayersUrl() {
   let layersUrl = [];
   const data = await listOfObjects();
   data.forEach((item) =>
@@ -38,31 +41,22 @@ async function amelTest() {
   console.log(layersUrl);
 }
 
-amelTest();
+getLayersUrl();
 
-/*async function listOfObjectsURL() {
-  listOfObjects();
+const randomIndex = (array) => Math.floor(Math.random() * array.length);
 
-  updatedData.forEach((item) => {
-    console.log(item.SignedUrl);
-  });
-}
-
-
-listOfObjectsURL();
-*/
-function randomlySelectLayers(layersPath, layers) {
-  const mt = MersenneTwister19937.autoSeed();
-
+function randomlySelectLayers(layersObj) {
+  //console.log(layersObj);
   let images = [];
   let selectedTraits = {};
-
-  for (const layer of layers) {
-    if (bool(layer.probability)(mt)) {
-      let selected = pickWeighted(mt, layer.options);
-      selectedTraits[layer.name] = selected.name;
-      images.push(path.join(layersPath, selected.file));
-    }
+  let objectKeys = [];
+  for (let i = 0; i < layersObj.length; i++) {
+    objectKeys.push(...Object.keys(layersObj[i]));
+  }
+  //console.log(objectKeys);
+  for (let i = 0; i < layersObj.length; i++) {
+    let arr = layersObj[i][objectKeys[i]];
+    console.log(`${objectKeys[i]} : ${arr[randomIndex(arr)]}`);
   }
 
   return {
@@ -70,3 +64,5 @@ function randomlySelectLayers(layersPath, layers) {
     selectedTraits,
   };
 }
+
+randomlySelectLayers(layersObj);
