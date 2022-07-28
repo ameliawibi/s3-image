@@ -32,9 +32,7 @@ const extractZip = (Bucket, buffer) => {
             const fileNames = entry.fileName.split(".");
             const { writeStream, promise } = uploadStream({
               Bucket,
-              Key: `${fileNames[0]}.${uuidv4()}.${
-                fileNames[fileNames.length - 1]
-              }`,
+              Key: `${fileNames[0]}.${fileNames[fileNames.length - 1]}`,
             });
             readStream.pipe(writeStream);
             promise.then(() => {
