@@ -38,7 +38,7 @@ async function getLayersUrl() {
   data.forEach((item) =>
     layersUrl.push({ fileName: item.Key, signedUrl: item.SignedUrl })
   );
-  console.log(layersUrl);
+  //console.log(layersUrl);
 }
 
 getLayersUrl();
@@ -52,12 +52,10 @@ function randomlySelectLayers(layersObj) {
   let objectKeys = [];
   for (let i = 0; i < layersObj.length; i++) {
     objectKeys.push(...Object.keys(layersObj[i]));
-  }
-  //console.log(objectKeys);
-  for (let i = 0; i < layersObj.length; i++) {
     let arr = layersObj[i][objectKeys[i]];
     console.log(`${objectKeys[i]} : ${arr[randomIndex(arr)]}`);
   }
+  //console.log(objectKeys);
 
   return {
     images,
