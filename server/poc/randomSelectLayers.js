@@ -32,33 +32,54 @@ async function listOfObjects() {
   });
 }
 
-async function getLayersUrl() {
+async function getLayersUrl(fileShortName) {
   let layersUrl = [];
   const data = await listOfObjects();
   data.forEach((item) =>
     layersUrl.push({ fileName: item.Key, signedUrl: item.SignedUrl })
   );
-  //console.log(layersUrl);
-}
 
-getLayersUrl();
+  //console.log(layersUrl);
+
+  const found = layersUrl
+    .filter((item) => item.fileName.includes(fileShortName))
+    .map((item) => item.signedUrl);
+
+  //console.log(found[0]);
+
+  return found[0];
+}
 
 const randomIndex = (array) => Math.floor(Math.random() * array.length);
 
-function randomlySelectLayers(layersObj) {
-  //console.log(layersObj);
-  let images = [];
+async function randomlySelectLayers(layersJson) {
+  let imagesURL = [];
   let selectedTraits = {};
   let objectKeys = [];
-  for (let i = 0; i < layersObj.length; i++) {
-    objectKeys.push(...Object.keys(layersObj[i]));
-    let arr = layersObj[i][objectKeys[i]];
-    console.log(`${objectKeys[i]} : ${arr[randomIndex(arr)]}`);
+  for (let i = 0; i < layersJson.length; i++) {
+    objectKeys.push(...Object.keys(layersJson[i]));
+
+    //if object keys are not background, head, shirt the layers generated are optional at random
+    if (
+      Math.random() < Math.random() &&
+      objectKeys[i] !== "background" &&
+      objectKeys[i] !== "head" &&
+      objectKeys[i] !== "shirt"
+    ) {
+      continue;
+    }
+
+    let arr = layersJson[i][objectKeys[i]];
+    selectedTraits[objectKeys[i]] = arr[randomIndex(arr)];
+    let foundUrl = await getLayersUrl(selectedTraits[objectKeys[i]]);
+    imagesURL.push(foundUrl);
+    //console.log(`${objectKeys[i]} : ${arr[randomIndex(arr)]}`);
   }
-  //console.log(objectKeys);
+  console.log(selectedTraits);
+  console.log(imagesURL);
 
   return {
-    images,
+    imagesURL,
     selectedTraits,
   };
 }
