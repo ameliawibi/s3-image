@@ -1,8 +1,8 @@
 const { s3 } = require("../s3");
 const bucketName = process.env.AWS_BUCKET_NAME;
 
-const content = require("../poc/layers.json");
-const layersObj = content.layers;
+//const content = require("../poc/layers.json");
+//const layersObj = content.layers;
 
 async function listOfObjects() {
   return new Promise((resolve, reject) => {
@@ -52,7 +52,7 @@ async function getLayersUrl(fileShortName) {
 
 const randomIndex = (array) => Math.floor(Math.random() * array.length);
 
-async function randomlySelectLayers(layersJson) {
+module.exports.randomlySelectLayers = async (layersJson) => {
   let imagesURL = [];
   let selectedTraits = {};
   let objectKeys = [];
@@ -75,13 +75,13 @@ async function randomlySelectLayers(layersJson) {
     imagesURL.push(foundUrl);
     //console.log(`${objectKeys[i]} : ${arr[randomIndex(arr)]}`);
   }
-  console.log(selectedTraits);
-  console.log(imagesURL);
+  //console.log(selectedTraits);
+  //console.log(imagesURL);
 
   return {
     imagesURL,
     selectedTraits,
   };
-}
+};
 
-randomlySelectLayers(layersObj);
+//randomlySelectLayers(layersObj);
