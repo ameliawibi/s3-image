@@ -2,7 +2,6 @@ const AWS = require("aws-sdk");
 const { s3 } = require("../s3");
 const stream = require("stream");
 const yauzl = require("yauzl");
-const { v4: uuidv4 } = require("uuid");
 
 const Bucket = process.env.AWS_BUCKET_NAME;
 const Key = "layers.zip";
@@ -32,7 +31,7 @@ const extractZip = (Bucket, buffer) => {
             const fileNames = entry.fileName.split(".");
             const { writeStream, promise } = uploadStream({
               Bucket,
-              Key: `${fileNames[0]}.${fileNames[fileNames.length - 1]}`,
+              Key: `1/1/${fileNames[0]}.${fileNames[fileNames.length - 1]}`,
             });
             readStream.pipe(writeStream);
             promise.then(() => {
