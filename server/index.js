@@ -2,7 +2,7 @@ const express = require("express");
 const { s3 } = require("./s3");
 const fs = require("fs");
 const multer = require("multer");
-const upload = multer({ dest: "uploads/" });
+const multerS3 = require("multer-s3");
 
 const app = express();
 app.use(express.json());
@@ -29,6 +29,7 @@ app.get("/getfiles", (_req, res) => {
           });
           updatedData[index].SignedUrl = urlToAdd;
         });
+
         //console.log(updatedData);
         return res.json({ files: updatedData });
       }
@@ -36,17 +37,52 @@ app.get("/getfiles", (_req, res) => {
   );
 });
 
+const upload = multer({
+  storage: multerS3({
+    s3,
+    bucket: bucketName,
+    metadata: function (req, file, cb) {
+      cb(null, { fieldName: file.originalname });
+    },
+    key: function (req, file, cb) {
+      //console.log(file);
+      cb(null, `1/${file.originalname}`); //use Date.now() for unique file keys
+    },
+  }),
+});
+
 app.post("/uploadfile", upload.single("file"), (req, res) => {
   // console.log(req);
   //console.log(req.file);
-  if (req.file == null) {
+  //console.log(req.file);
+  let file = req.file;
+
+  if (file == null) {
     return res.status(400).json({ message: "Please choose the file" });
   }
-  var file = req.file;
+  let urlToAdd = s3.getSignedUrl("getObject", {
+    Bucket: bucketName,
+    Key: file.key,
+    Expires: 60 * 5,
+  });
+
+  let updatedData = {
+    SignedUrl: urlToAdd,
+    Key: file.key,
+    type: file.mimetype,
+    size: file.size,
+  };
+  //console.log(updatedData);
+
+  res.status(201).json({
+    message: "Uploaded!",
+    files: updatedData,
+  });
+
   // res.send(200);
   // res.sendStatus(201);
 
-  const uploadImage = (file) => {
+  /*const uploadImage = (file) => {
     const fileStream = fs.createReadStream(file.path);
     //console.log(fileStream);
     const params = {
@@ -73,6 +109,7 @@ app.post("/uploadfile", upload.single("file"), (req, res) => {
     });
   };
   uploadImage(file);
+  */
 });
 
 app.get("/getfile/:filename", (req, res) => {
@@ -87,9 +124,8 @@ app.get("/getfile/:filename", (req, res) => {
   res.json({ url: url });
 });
 
-app.get("/deletefile/:filename", (req, res) => {
-  let fileName = req.params.filename;
-
+app.get("/deletefile", (req, res) => {
+  let fileName = req.query.filename;
   const params = {
     Bucket: bucketName,
     Key: fileName,

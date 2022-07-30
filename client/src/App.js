@@ -68,6 +68,7 @@ export const ImageProvider = ({ children }) => {
       })
       .then((res) => {
         if (res) {
+          console.log(res.data.files);
           setMessages("File uploaded successfully");
           dispatch({
             type: actions.UPLOAD,
@@ -82,8 +83,9 @@ export const ImageProvider = ({ children }) => {
   };
 
   const deleteImage = async (fileName, index) => {
+    console.log(fileName);
     axios
-      .get(`/deletefile/${fileName}`)
+      .get(`/deletefile?filename=${fileName}`)
       .then((res) => {
         console.log(res);
         dispatch({ type: actions.DELETE, payload: index });
