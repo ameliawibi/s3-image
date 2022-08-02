@@ -5,7 +5,9 @@ const archiver = require("archiver");
 const { s3 } = require("../s3");
 
 const folder = "1/nft/";
+const zipFolder = "1/zip/";
 const bucketName = process.env.AWS_BUCKET_NAME;
+const zipFileName = "zip";
 
 const zipParams = {
   Bucket: bucketName,
@@ -45,7 +47,7 @@ async function zipFunction() {
   const uploadParams = {
     Body: streamPassThrough,
     ContentType: "application/zip",
-    Key: "zippedFileKey",
+    Key: `${zipFolder}${zipFileName}`,
     Bucket: bucketName,
   };
 
