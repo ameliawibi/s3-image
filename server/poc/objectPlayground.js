@@ -23,10 +23,11 @@ for (let i = 0; i < layersJson.length; i++) {
   objectKeys.push(...Object.keys(layersJson[i]));
   for (const element of layersJson[i][objectKeys[i]]) {
     data.push({
+      collectionId: 1,
       trait_type: objectKeys[i],
-      probability: 1.0,
+      probability: 1,
       subtrait: element,
-      rarity: 1.0,
+      rarity: 1,
     });
   }
 }

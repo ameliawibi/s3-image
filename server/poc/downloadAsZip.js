@@ -4,10 +4,10 @@ const archiver = require("archiver");
 
 const { s3 } = require("../s3");
 
-const folder = "1/nft/";
-const zipFolder = "1/zip/";
+const folder = "1/layers.zip/nft/";
+const zipFolder = "1/layers.zip/zippedNFTs";
 const bucketName = process.env.AWS_BUCKET_NAME;
-const zipFileName = "zip";
+const zipFileName = "firstCollection";
 
 const zipParams = {
   Bucket: bucketName,
