@@ -4,11 +4,14 @@ const bucketName = process.env.AWS_BUCKET_NAME;
 //const content = require("../poc/layers.json");
 //const layersObj = content.layers;
 
+const prefix = "1/layers.zip/";
+
 async function listOfObjects() {
   return new Promise((resolve, reject) => {
     s3.listObjects(
       {
         Bucket: bucketName,
+        Prefix: prefix,
       },
       function (err, data) {
         if (err) {
@@ -32,9 +35,9 @@ async function listOfObjects() {
   });
 }
 
-async function getLayersUrl(fileShortName) {
+async function getLayersUrl(fileShortName, data) {
   let layersUrl = [];
-  const data = await listOfObjects();
+
   data.forEach((item) =>
     layersUrl.push({ fileName: item.Key, signedUrl: item.SignedUrl })
   );
@@ -56,6 +59,7 @@ module.exports.randomlySelectLayers = async (layersJson) => {
   let imagesURL = [];
   let selectedTraits = {};
   let objectKeys = [];
+  const data = await listOfObjects();
   for (let i = 0; i < layersJson.length; i++) {
     objectKeys.push(...Object.keys(layersJson[i]));
 
@@ -71,7 +75,7 @@ module.exports.randomlySelectLayers = async (layersJson) => {
 
     let arr = layersJson[i][objectKeys[i]];
     selectedTraits[objectKeys[i]] = arr[randomIndex(arr)];
-    let foundUrl = await getLayersUrl(selectedTraits[objectKeys[i]]);
+    let foundUrl = await getLayersUrl(selectedTraits[objectKeys[i]], data);
     imagesURL.push(foundUrl);
     //console.log(`${objectKeys[i]} : ${arr[randomIndex(arr)]}`);
   }

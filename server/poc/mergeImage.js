@@ -86,4 +86,4 @@ function generateMetadata(tokenId, traits) {
 }
 
 //generateNFTs(2, outputPath);
-generateNFTs(10, "1/layers.zip/nft/");
+generateNFTs(2, "1/layers.zip/nft/");
