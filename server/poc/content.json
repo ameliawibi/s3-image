@@ -1,0 +1,136 @@
+{
+  "layers": [
+    {
+      "trait_type": "top",
+      "probability": "0.5",
+      "options": [
+        {
+          "subtrait": "like-a-sir.png",
+          "rarity": "0.5"
+        },
+        {
+          "subtrait": "cowboy.png",
+          "rarity": "0.6"
+        },
+        {
+          "subtrait": "einstein.png",
+          "rarity": "0.8"
+        },
+        {
+          "subtrait": "fez.png",
+          "rarity": "1.00"
+        },
+        {
+          "subtrait": "cap.png",
+          "rarity": "1.00"
+        }
+      ]
+    },
+    {
+      "trait_type": "background",
+      "probability": "1.00",
+      "options": [
+        {
+          "subtrait": "wheat.png",
+          "rarity": "0.5"
+        },
+        {
+          "subtrait": "blue.png",
+          "rarity": "0.6"
+        },
+        {
+          "subtrait": "orange.png",
+          "rarity": "1.00"
+        },
+        {
+          "subtrait": "green.png",
+          "rarity": "1.00"
+        }
+      ]
+    },
+    {
+      "trait_type": "head",
+      "probability": "1.00",
+      "options": [
+        {
+          "subtrait": "light.png",
+          "rarity": "1.00"
+        },
+        {
+          "subtrait": "albino.png",
+          "rarity": "1.00"
+        },
+        {
+          "subtrait": "zombie.png",
+          "rarity": "1.00"
+        },
+        {
+          "subtrait": "mid.png",
+          "rarity": "1.00"
+        },
+        {
+          "subtrait": "skeleton.png",
+          "rarity": "1.00"
+        }
+      ]
+    },
+    {
+      "trait_type": "facial-hair",
+      "probability": "0.2",
+      "options": [
+        {
+          "subtrait": "mutton-chops.png",
+          "rarity": "3.00"
+        },
+        {
+          "subtrait": "goatee.png",
+          "rarity": "1.00"
+        },
+        {
+          "subtrait": "long-beard.png",
+          "rarity": "1.00"
+        }
+      ]
+    },
+    {
+      "trait_type": "eyes",
+      "probability": "0.2",
+      "options": [
+        {
+          "subtrait": "laser.png",
+          "rarity": "1.00"
+        },
+        {
+          "subtrait": "3d.png",
+          "rarity": "1.00"
+        },
+        {
+          "subtrait": "square-shades.png",
+          "rarity": "1.00"
+        }
+      ]
+    },
+    {
+      "trait_type": "shirt",
+      "probability": "1.0",
+      "options": [
+        {
+          "subtrait": "stripes-blue-white.png",
+          "rarity": "1.00"
+        },
+        {
+          "subtrait": "pinata.png",
+          "rarity": "1.00"
+        },
+        {
+          "subtrait": "purple-blue-pink.png",
+          "rarity": "1.00"
+        },
+        {
+          "subtrait": "flames.png",
+          "rarity": "1.00"
+        }
+      ]
+    }
+  ]
+}
